@@ -88,7 +88,7 @@ void parseLineData(const char line_data[]) {
 		}
 	}
 }
-
+// Counts time passed until start.
 float execTime(const clock_t start) {
 	clock_t diff = clock() - start;
 	return (float)diff / CLOCKS_PER_SEC;
