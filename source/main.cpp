@@ -2,7 +2,7 @@
 
 char *createRelativePath(const char filename[]);
 void readFileData(const char filename[]);
-void parseLineData(const char line_data[]);
+void parseLineData(char line_data[]);
 float execTime(const clock_t start);
 
 int main(int argc, char *argv[]) {
@@ -10,18 +10,18 @@ int main(int argc, char *argv[]) {
     clock_t start = clock();
 
 	argc = 4;
-	argv[0] = PROJECT_DATA_DIR;
-	argv[1] = "wiener_linien.txt";
-	argv[2] = "Westbahnhof";
-	argv[3] = "Stefansplatz";
+	argv[0] = (char*)PROJECT_DATA_DIR;
+	argv[1] = (char*)"wiener_linien.txt";
+	argv[2] = (char*)"Westbahnhof";
+	argv[3] = (char*)"Stefansplatz";
 
     if (argc == 4) {
 		for (int i = 0; i < argc; i++) {
-			printf("args: %s\n", argv[i]);
+			std::cout << "args: " << argv[i] << std::endl;
 		}
 		readFileData(argv[1]);
 	} else {
-		printf("No arguments have been provided!");
+		std::cout << "Not enought arguments have been provided!" << std::endl;
 	}
 
 	printf("\nExecution time: %f secs\n", execTime(start));
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 char *createRelativePath(const char filename[]) {
 	int path_len = strlen(PROJECT_DATA_DIR) + strlen(filename) + 1;
 
-	char *path = malloc(path_len);
+	char *path = new char[path_len];
 	if (!path) {
 		return NULL;
 	}
@@ -50,24 +50,24 @@ void readFileData(const char filename[]) {
 		printf("Failed to open file: %s\n", path);
 		return;
 	}
-
+	
 	char line_data[1024] = "\0";
 	while (!feof(fp)) {
-		fgets(&line_data, 1024, fp);
+		fgets(line_data, 1024, fp);
 		parseLineData(line_data);
 	}
 
-	free(path);
+	delete path;
 }
 /* Parses the data of a line, seperating Line name, station and weight from each other. */
-void parseLineData(const char line_data[]) {
+void parseLineData(char line_data[]) {
 	char line_name[4] = "";
 	char station_name[64] = "";
 	char weight[4] = "";
 
 	char* token = strtok(line_data, ":");
 	if (token != NULL) {
-		strcpy(&line_name, token);
+		strcpy(line_name, token);
 	}
 	// consume the (:) char and spaces after the line name, until we hit a (") char
 	token = strtok(NULL, "\"");
@@ -77,13 +77,13 @@ void parseLineData(const char line_data[]) {
 
 		token = strtok(NULL, "\"");
 		if (token != NULL) {
-			strcpy(&station_name, token);
+			strcpy(station_name, token);
 			printf("%-35s", station_name);
 		}
 
 		token = strtok(NULL, "\"");
 		if (token != NULL) {
-				strcpy(&weight, token);
+				strcpy(weight, token);
 				printf("%s\n", weight);
 		}
 	}

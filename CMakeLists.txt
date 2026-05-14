@@ -9,10 +9,10 @@ endif()
 project (find_path)
 
 # Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
-add_executable (find_path "source/main.c")
+add_executable (find_path "source/main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET find_path PROPERTY C_STANDARD 17)
+  set_property(TARGET find_path PROPERTY CXX_STANDARD 20)
 endif()
 
 target_include_directories(find_path PUBLIC "${PROJECT_SOURCE_DIR}/")

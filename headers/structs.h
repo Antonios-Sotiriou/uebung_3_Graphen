@@ -14,7 +14,7 @@ typedef struct Station {
 } Station;
 
 /* The connection between two stops. Value is the weight for this connection. */
-typedef struct {
+typedef struct Connection {
 	int value;
 	Station *prev;
 	Station *next;
