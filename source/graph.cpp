@@ -43,39 +43,51 @@ void Graph::findRoute(const std::string& from, const std::string& to) {
 		std::cout << "Start Station not found" << std::endl;
 		return;
 	}
-	Node start_point = adj.at(from);
+	start_node = adj.at(from);
 
 	if (adj.find(to) == adj.end()) {
 		std::cout << "End Station not found" << std::endl;
 		return;
 	}
-	Node end_point = adj.at(to);
+	end_node = adj.at(to);
 
-	findPath(start_point, end_point);
+	findPath(start_node, end_node);
+	printPath();
 }
 
-void Graph::findPath(Node& start, Node& end) {
-	std::cout << start.name << " ";
-	if (start.visited) {
-		//std::cout << "Already visited: " << start.name << std::endl;
-		return;
-	}
-	start.visited = 1;
-
+int Graph::findPath(Node& start, Node& end) {
+	path.push_back(start);
 	if (start.name == end.name) {
-		std::cout << "  " << end.name << ": Connection found!##########################################" << std::endl;
-		return;
+		//std::cout << "  " << end.name << ": Connection found!" << std::endl;
+		return 1;
 	}
+
+	if (start.visited == start.conns.size()) {
+		//std::cout << "Already visited: " << start.name << std::endl;
+		return 0;
+	}
+	start.visited++;
 
 	for (auto conn : start.conns) {
 		if (conn.next != "") {
-			std::cout << start.name << " <-> ";
-			findPath(adj.at(conn.next), end);
+			//std::cout << start.name << " <-> ";
+			Node next_node = adj.at(conn.next);
+			if (!next_node.visited) {
+				if (findPath(adj.at(conn.next), end)) {
+					cost.push_back(conn);
+					return 1;
+				}
+			}
 		}
 	}
+	if (path.size())
+	    path.pop_back();
+	if (cost.size())
+		cost.pop_back();
+	return 0;
 }
 
-void Graph::printNode(const std::string node_name) {
+void Graph::printNode(const std::string node_name) const {
 	if (!hasNode(node_name)) {
 		std::cout << "Node not found" << std::endl;
 		return;
@@ -88,6 +100,24 @@ void Graph::printNode(const std::string node_name) {
 	std::cout << "}" << std::endl;
 }
 
-void Graph::printEdge(const Edge& edge) {
+void Graph::printEdge(const Edge& edge) const {
 	std::cout << "    " << edge.weight << " -> " << edge.next << "    Line: " << edge.line << std::endl;
+}
+
+void Graph::printPath() const {
+
+	if (path.size()) {
+		int len = path.size();
+		int cost_index = len - 2;
+
+		std::cout << "Connection found!" << std::endl;
+		for (int i = 0; i < len; i++) {
+			printf("%35s ", path[i].name.c_str());
+			if (cost_index < 0) {
+				break;
+			}
+			printf("  %2s %2d   %s\n", cost[cost_index].line.c_str(), cost[cost_index].weight, cost[cost_index].next.c_str());
+			cost_index--;
+		}
+	}
 }

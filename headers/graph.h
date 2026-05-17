@@ -34,9 +34,14 @@ class Graph {
 		bool hasNode(const std::string& station) const;
 
 		void findRoute(const std::string& from, const std::string& to);
-		void findPath(Node& start, Node& end);
+		int findPath(Node& start, Node& end);
 
-		void printNode(const std::string node_name);
-		void printEdge(const Edge &edge);
+		void printNode(const std::string node_name) const;
+		void printEdge(const Edge &edge) const;
+		void printPath() const;
+
+		std::vector<Node> path;
+		std::vector<Edge> cost;
+		Node start_node, end_node;
 };
 #endif // !GRAPH_H
