@@ -14,12 +14,9 @@ int main(int argc, char *argv[]) {
 	argv[0] = (char*)PROJECT_DATA_DIR;
 	argv[1] = (char*)"wiener_linien.txt";
 	argv[2] = (char*)"Westbahnhof";
-	argv[3] = (char*)"Jaegerstrasse";
+	argv[3] = (char*)"Traisengasse";
 
     if (argc == 4) {
-		for (int i = 0; i < argc; i++) {
-			std::cout << "args: " << argv[i] << std::endl;
-		}
 		readFileData(graph, argv[1]);
 	} else {
 		std::cout << "Not enought arguments have been provided!" << std::endl;
@@ -27,6 +24,7 @@ int main(int argc, char *argv[]) {
 
 	graph.findRoute(argv[2], argv[3]);
 	//graph.printNode("Westbahnhof");
+
 	printf("\nExecution time: %f secs\n", execTime(start));
 
 	return 0;
