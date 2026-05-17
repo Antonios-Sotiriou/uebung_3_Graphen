@@ -1,32 +1,32 @@
 #include "headers/main.h"
 
+Graph graph; //global erzeugt, damit die Funktion parseLineData sie verwenden kann
 char *createRelativePath(const char filename[]);
-void readFileData(LinesTable *lines_table, const char filename[]);
-void parseLineData(LinesTable *lines_table, char line_data[]);
+void readFileData(const char filename[]);
+void parseLineData(char line_data[]);
 float execTime(const clock_t start);
 
 int main(int argc, char *argv[]) {
 
     clock_t start = clock();
 
-	LinesTable lines_table;
-
 	argc = 4;
 	argv[0] = (char*)PROJECT_DATA_DIR;
 	argv[1] = (char*)"wiener_linien.txt";
 	argv[2] = (char*)"Westbahnhof";
-	argv[3] = (char*)"Stefansplatz";
+	argv[3] = (char*)"Stephansplatz";
 
     if (argc == 4) {
 		for (int i = 0; i < argc; i++) {
 			std::cout << "args: " << argv[i] << std::endl;
 		}
-		readFileData(&lines_table, argv[1]);
+		readFileData(argv[1]);
 	} else {
 		std::cout << "Not enought arguments have been provided!" << std::endl;
 	}
-	printLinesTable(lines_table);
+
 	printf("\nExecution time: %f secs\n", execTime(start));
+
 
 	return 0;
 }
@@ -43,7 +43,7 @@ char *createRelativePath(const char filename[]) {
 	return path;
 }
 /* Reads the data from the file line by line. */
-void readFileData(LinesTable *lines_table, const char filename[]) {
+void readFileData(const char filename[]) {
 
 	char *path = createRelativePath(filename);
 
@@ -56,39 +56,41 @@ void readFileData(LinesTable *lines_table, const char filename[]) {
 	char line_data[1024] = { 0 };
 	while (!feof(fp)) {
 		fgets(line_data, 1024, fp);
-		parseLineData(lines_table, line_data);
+		parseLineData(line_data);
 	}
 
 	delete path;
 }
-/* Parses the data of a line, seperating Line name, station and weight from each other. */
-void parseLineData(LinesTable *lines_table, char line_data[]) {
-	Line line;
+void parseLineData(char line_data[]) {
+	std::string lineName;
+	std::vector<std::string> stations;
+	std::vector<int> weights;
 
 	char* token = strtok(line_data, ":");
-	if (token != nullptr) {
-		line.name.assign(token);
+	if (token != NULL) {
+		lineName = token;
 	}
+
 	// consume the (:) char and spaces after the line name, until we hit a (") char
-	token = strtok(nullptr, "\"");
+	token = strtok(NULL, "\"");
+	while (token != NULL) {
 
-	while (token != nullptr) {
-
-		token = strtok(nullptr, "\"");
-		if (token != nullptr) {
-			line.stations.push_back(token);
+		token = strtok(NULL, "\"");
+		if (token == NULL) {
+			break;
 		}
+		stations.push_back(token);
 
-		token = strtok(nullptr, "\"");
-		if (token != nullptr) {
-			int weight = atoi(token);
-			if (weight != 0) {
-				line.weights.push_back(weight);
-			}
+		token = strtok(NULL, "\"");
+		if (token == NULL) {
+			break;
 		}
+		weights.push_back(std::stoi(token));
 	}
 
-	lines_table->lines.push_back(line);
+	for (size_t i = 0; i + 1 < stations.size(); i++) {
+		graph.addEdge(stations[i], stations[i + 1], weights[i], lineName);
+	}
 }
 // Counts time passed since start.
 float execTime(const clock_t start) {

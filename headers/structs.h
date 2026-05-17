@@ -21,16 +21,4 @@ typedef struct Station {
 	std::vector<Connection> conns;
 } Station;
 
-/* Struct to save data for each line before we create the graph of them. */
-typedef struct {
-	std::string name;
-	std::vector<std::string> stations;
-	std::vector<int> weights;
-} Line;
-
-/* Holds all the data readed from file. From this struct we can process the data further without reading the file again. */
-typedef struct {
-	std::vector<Line> lines;
-} LinesTable;
-
 #endif // !STRUCTS_H
