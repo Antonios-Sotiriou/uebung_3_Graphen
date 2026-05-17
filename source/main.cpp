@@ -1,13 +1,15 @@
 #include "headers/main.h"
 
 char *createRelativePath(const char filename[]);
-void readFileData(const char filename[]);
-void parseLineData(char line_data[]);
+void readFileData(LinesTable *lines_table, const char filename[]);
+void parseLineData(LinesTable *lines_table, char line_data[]);
 float execTime(const clock_t start);
 
 int main(int argc, char *argv[]) {
 
     clock_t start = clock();
+
+	LinesTable lines_table;
 
 	argc = 4;
 	argv[0] = (char*)PROJECT_DATA_DIR;
@@ -19,11 +21,11 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < argc; i++) {
 			std::cout << "args: " << argv[i] << std::endl;
 		}
-		readFileData(argv[1]);
+		readFileData(&lines_table, argv[1]);
 	} else {
 		std::cout << "Not enought arguments have been provided!" << std::endl;
 	}
-
+	printLinesTable(lines_table);
 	printf("\nExecution time: %f secs\n", execTime(start));
 
 	return 0;
@@ -41,7 +43,7 @@ char *createRelativePath(const char filename[]) {
 	return path;
 }
 /* Reads the data from the file line by line. */
-void readFileData(const char filename[]) {
+void readFileData(LinesTable *lines_table, const char filename[]) {
 
 	char *path = createRelativePath(filename);
 
@@ -51,42 +53,42 @@ void readFileData(const char filename[]) {
 		return;
 	}
 	
-	char line_data[1024] = "\0";
+	char line_data[1024] = { 0 };
 	while (!feof(fp)) {
 		fgets(line_data, 1024, fp);
-		parseLineData(line_data);
+		parseLineData(lines_table, line_data);
 	}
 
 	delete path;
 }
 /* Parses the data of a line, seperating Line name, station and weight from each other. */
-void parseLineData(char line_data[]) {
-	char line_name[4] = "";
-	char station_name[64] = "";
-	char weight[4] = "";
+void parseLineData(LinesTable *lines_table, char line_data[]) {
+	Line line;
 
 	char* token = strtok(line_data, ":");
-	if (token != NULL) {
-		strcpy(line_name, token);
+	if (token != nullptr) {
+		line.name.assign(token);
 	}
 	// consume the (:) char and spaces after the line name, until we hit a (") char
-	token = strtok(NULL, "\"");
+	token = strtok(nullptr, "\"");
 
-	printf("%s\n", line_name);
-	while (token != NULL) {
+	while (token != nullptr) {
 
-		token = strtok(NULL, "\"");
-		if (token != NULL) {
-			strcpy(station_name, token);
-			printf("%-35s", station_name);
+		token = strtok(nullptr, "\"");
+		if (token != nullptr) {
+			line.stations.push_back(token);
 		}
 
-		token = strtok(NULL, "\"");
-		if (token != NULL) {
-				strcpy(weight, token);
-				printf("%s\n", weight);
+		token = strtok(nullptr, "\"");
+		if (token != nullptr) {
+			int weight = atoi(token);
+			if (weight != 0) {
+				line.weights.push_back(weight);
+			}
 		}
 	}
+
+	lines_table->lines.push_back(line);
 }
 // Counts time passed since start.
 float execTime(const clock_t start) {

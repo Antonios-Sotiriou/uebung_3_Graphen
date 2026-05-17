@@ -7,6 +7,8 @@
 #include <time.h>
 
 #include "headers/structs.h"
+#include "headers/printStructs.h"
 #include "headers/cmake_variables.h"
+#include "headers/graph.h"
 
 #endif // !MAIN_H
