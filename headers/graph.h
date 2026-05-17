@@ -1,8 +1,6 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "headers/structs.h"
-
 #include <iostream>
 #include <string>
 #include <unordered_map>
