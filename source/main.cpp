@@ -1,32 +1,33 @@
 #include "headers/main.h"
 
-Graph graph; //global erzeugt, damit die Funktion parseLineData sie verwenden kann
 char *createRelativePath(const char filename[]);
-void readFileData(const char filename[]);
-void parseLineData(char line_data[]);
+void readFileData(Graph &graph, const char filename[]);
+void parseLineData(Graph &graph, char line_data[]);
 float execTime(const clock_t start);
 
 int main(int argc, char *argv[]) {
 
     clock_t start = clock();
+	Graph graph;
 
 	argc = 4;
 	argv[0] = (char*)PROJECT_DATA_DIR;
 	argv[1] = (char*)"wiener_linien.txt";
 	argv[2] = (char*)"Westbahnhof";
-	argv[3] = (char*)"Stephansplatz";
+	argv[3] = (char*)"Jaegerstrasse";
 
     if (argc == 4) {
 		for (int i = 0; i < argc; i++) {
 			std::cout << "args: " << argv[i] << std::endl;
 		}
-		readFileData(argv[1]);
+		readFileData(graph, argv[1]);
 	} else {
 		std::cout << "Not enought arguments have been provided!" << std::endl;
 	}
 
+	graph.findRoute(argv[2], argv[3]);
+	//graph.printNode("Westbahnhof");
 	printf("\nExecution time: %f secs\n", execTime(start));
-
 
 	return 0;
 }
@@ -43,7 +44,7 @@ char *createRelativePath(const char filename[]) {
 	return path;
 }
 /* Reads the data from the file line by line. */
-void readFileData(const char filename[]) {
+void readFileData(Graph& graph, const char filename[]) {
 
 	char *path = createRelativePath(filename);
 
@@ -56,12 +57,12 @@ void readFileData(const char filename[]) {
 	char line_data[1024] = { 0 };
 	while (!feof(fp)) {
 		fgets(line_data, 1024, fp);
-		parseLineData(line_data);
+		parseLineData(graph, line_data);
 	}
 
 	delete path;
 }
-void parseLineData(char line_data[]) {
+void parseLineData(Graph& graph, char line_data[]) {
 	std::string lineName;
 	std::vector<std::string> stations;
 	std::vector<int> weights;
@@ -85,11 +86,14 @@ void parseLineData(char line_data[]) {
 		if (token == NULL) {
 			break;
 		}
-		weights.push_back(std::stoi(token));
+		int weight = atoi(token);
+		if (weight) {
+			weights.push_back(weight);
+		}
 	}
 
 	for (size_t i = 0; i + 1 < stations.size(); i++) {
-		graph.addEdge(stations[i], stations[i + 1], weights[i], lineName);
+		graph.addNode(stations[i], stations[i + 1], weights[i], lineName);
 	}
 }
 // Counts time passed since start.

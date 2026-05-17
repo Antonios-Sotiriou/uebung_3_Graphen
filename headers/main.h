@@ -6,7 +6,6 @@
 
 #include <time.h>
 
-#include "headers/structs.h"
 #include "headers/cmake_variables.h"
 #include "headers/graph.h"
 
