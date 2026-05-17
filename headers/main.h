@@ -5,8 +5,10 @@
 #include <string>
 
 #include <time.h>
+#include "headers/graph.h"
 
-#include "headers/structs.h"
 #include "headers/cmake_variables.h"
+
+
 
 #endif // !MAIN_H
